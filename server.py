@@ -52,7 +52,7 @@ class World:
         return self.space.get(entity,dict())
     
     def world(self):
-        return self.space
+        return self.space#{'x12':{'x':125,'y':125,'colour':'red', 'radius':5}}#self.space
 
 # you can test your webservice from the commandline
 # curl -v   -H "Content-Type: application/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}' 
@@ -74,27 +74,29 @@ def flask_post_json():
 @app.route("/")
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return None
+    return flask.redirect('http://127.0.0.1:5000/static/index.html', 301)
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
-    '''update the entities via this interface'''
-    return None
+    json_stuff = flask_post_json()
+    for i in json_stuff:
+        myWorld.update(entity, i, json_stuff[i])
+    return json_stuff
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return None
+    return myWorld.world()
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+    return myWorld.get(entity)
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
-    '''Clear the world out!'''
-    return None
+    myWorld.clear()
+    return myWorld.world()
 
 if __name__ == "__main__":
     app.run()
